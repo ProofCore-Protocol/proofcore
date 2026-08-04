@@ -1,0 +1,9 @@
+{
+  "projects": [
+    {
+      "name": "ProofRegistry",
+      "path": "./ProofRegistry.tact",
+      "output": "./output"
+    }
+  ]
+}
