@@ -1,100 +1,137 @@
-# 🏛 ProofCore Protocol
+# 🛡️ ProofCore Protocol
 
-> **Trust you can't delete.**  
-> A trustless, cryptographic Proof-of-Existence (PoE) engine built on **The Open Network (TON)**. Turn ephemeral Telegram messages, E-Mails, agreements, and files into legally admissible, unalterable digital evidence.
+**The Cryptographic Notarization & Evidence Layer for the AI & M2M Economy**
 
-[![TON Blockchain](https://img.shields.io/badge/Blockchain-TON-blue.svg)](https://ton.org)
-[![Smart Contract](https://img.shields.io/badge/Tact-ProofRegistry-00f298.svg)](https://tact-lang.org)
-[![Compliance](https://img.shields.io/badge/Legal-FRE%20902%20%7C%20eIDAS-00d2ff.svg)](https://proofcore.org/docs.html)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![TON Blockchain](https://img.shields.io/badge/Blockchain-TON%20Testnet%2FMainnet-0098EA?logo=ton&logoColor=white)](https://ton.org)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python&logoColor=white)](https://www.python.org)
+[![OpenAPI 3.1](https://img.shields.io/badge/OpenAPI-3.1.0-6BA539?logo=openapi-initiative&logoColor=white)](https://proofcore.org/openapi.json)
+[![llms.txt](https://img.shields.io/badge/llms.txt-Standard%20Compliant-purple)](https://proofcore.org/llms.txt)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
----
+> *"Don't trust ProofCore. Verify the proof yourself."*
 
-## 💡 The Problem
-
-In modern communications (Telegram, E-Mails, Messengers), agreements can be unilaterally erased using **"Delete for Everyone"**, or altered via DOM tools and Photoshop. Screenshots carry zero mathematical weight in court or formal arbitration.
-
-If a partner deletes a chat after a P2P crypto swap, freelance milestone, or OTC agreement, you are left with **zero admissible proof**.
+[🌐 Website](https://proofcore.org) • [📖 OpenAPI Spec](https://proofcore.org/openapi.json) • [🤖 llms.txt](https://proofcore.org/llms.txt) • [📱 Telegram Bot](https://t.me/ProofCoreBot)
 
 ---
 
-## 🛡 The Solution: ProofCore
+## ⚡ The Problem & The Solution
 
-**ProofCore** anchors digital fingerprints (SHA-256 hashes) directly into the TON Blockchain. Even if a scammer deletes the chat, **they cannot delete data anchored into a decentralized blockchain.**
+In the era of autonomous AI agents, digital trust is broken:
+* **Denial of Generation:** AI outputs can be secretly altered or deleted.
+* **Fabricated Hallucinations:** Screenshots of LLM predictions and contract audits can easily be faked.
+* **Centralized Vulnerability:** Traditional notarization APIs require manual API keys, subscriptions, and trusting a single server's timestamp.
 
-### Key Features
-* 💬 **Telegram Deep Context:** Extracts sender ID, forward origins, avatar SHA-256 hash, and raw JSON message payloads via `@ProofCoreBot`.
-* 📧 **DKIM-Authenticated E-Mails:** Cloudflare Workers extract `.eml` raw payloads and verify DKIM cryptographic signatures against Google/Microsoft DNS.
-* 📁 **Immutable Media & Files:** Computes SHA-256 checksums for PDFs, code, screenshots, and media up to 50MB.
-* 🌳 **Merkle Tree Batching:** Groups thousands of asset hashes into a binary Merkle Tree and writes a single 64-character Merkle Root to TON via Tact Smart Contract (`ProofRegistry.tact`), keeping gas fees near zero.
-* 📦 **Offline Evidence Package (ZIP):** Generates a self-authenticating ZIP package containing original raw files, JSON manifests, FRE 902 PDF certificates, and 100% offline HTML/Python verifiers.
+**ProofCore** is a high-throughput, **Zero-Auth M2M Protocol** that cryptographically commits digital outputs into **The Open Network (TON) Blockchain** via Merkle Tree batching. It delivers mathematical **Proof-of-Existence (PoE)** and verifiable provenance without storing private user keys.
 
----
-
-## 🏛 Legal Compliance & Standards
-
-ProofCore certificates are designed to meet international electronic evidence standards:
-* **🇺🇸 US Federal Rules of Evidence (FRE 902):** Rule 902(14) governs self-authenticating electronic data authenticated by a process of digital identification (cryptographic hash value).
-* **🇪🇺 EU eIDAS Regulation (910/2014):** Article 41(1) recognizes electronic time stamps as legally admissible evidence in legal proceedings across European Union member states.
-
----
-
-## 📦 Evidence Package Structure (ZIP)
-
-When an asset is sealed, ProofCore outputs a standalone, self-authenticating archive:
-
-```
-proof_package.zip
-├── 📁 1_ORIGINAL_ASSET/        ← Unmodified raw file or payload
-├── 📁 2_PROOF_DATA/           ← proof.json manifest + forensic_metadata.json
-├── 📁 3_VERIFIERS/            ← verify.py & verify.html (100% Offline Verifiers)
-├── 📁 4_LEGAL_CERTIFICATE/    <-- FRE 902 PDF Certificate with verification QR
-└── 📁 5_README/               ← Verification instructions
+```text
+┌────────────────┐     POST /api/v0.1/seal     ┌────────────────┐
+│ Autonomous AI  │ ──────────────────────────> │   ProofCore    │
+│ Agent / LLM    │ <────────────────────────── │   API Gateway  │
+└────────────────┘    Instant Citation Badge   └───────┬────────┘
+                                                       │
+                                            SHA-256 Merkle Batching
+                                                       │
+                                                       ▼
+                                            ┌────────────────────┐
+                                            │   TON Blockchain   │
+                                            │ (Immutable Anchor) │
+                                            └────────────────────┘
 ```
 
----
+ ---
+  ## 🚀 Developer Integrations & SDK
 
-## 🔍 Independent Offline Verification
+  **Zero-Auth Cryptographic Notarization API for AI Agents & Autonomous Systems** The easiest way to interact with the TON Blockchain and seal your data is to use our official Python package.
 
-You do **not** need ProofCore servers to verify your evidence. You can verify it offline in 2 seconds:
+## 📦 Installation
 
-### Method A: Browser Verification
-Open `3_VERIFIERS/verify.html` in any browser, select `proof.json` and your original file. The local JavaScript engine recalculates the SHA-256 hash and traverses the Merkle Tree to verify against TON Blockchain.
-
-### Method B: Python Terminal
 ```bash
-python3 3_VERIFIERS/verify.py
+pip install proofcore
+```
+*(For specific AI frameworks, use `pip install proofcore[langchain]` or `pip install proofcore[crewai]`)*
+
+---
+
+## 🤖 1. LangChain Agent Integration
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.agents import initialize_agent, AgentType
+from proofcore.langchain import ProofCoreSealerTool
+
+# 1. Init LLM and our official drop-in tool
+llm = ChatOpenAI(model="gpt-4o")
+tools = [ProofCoreSealerTool()]
+
+# 2. Run the agent
+agent = initialize_agent(tools, llm, agent=AgentType.OPENAI_FUNCTIONS, verbose=True)
+
+# The agent will write the audit, call the tool, and give you the verification link!
+response = agent.run("Write a short security audit for an ERC-20 token and notarize it.")
+print(response)
 ```
 
 ---
 
-## ⚙️ Architecture & Smart Contracts
+## 🕵️ 2. CrewAI Integration
 
-```
-[ Telegram / E-Mail / Upload ] 
-            │
-            ▼
-[ SHA-256 Fingerprint + Forensic Metadata ]
-            │
-            ▼
-[ Merkle Tree Batching Engine ]
-            │
-            ▼
-[ TON Blockchain Smart Contract ] ──► ProofRegistry.tact
-```
+```python
+from crewai import Agent, Task, Crew
+from proofcore.crewai import ProofCoreCrewTool
 
-The smart contract is written in **Tact** for TON Blockchain. It emits `BatchAnchoredEvent` containing `batch_id` and `merkle_root`.
+notary_tool = ProofCoreCrewTool()
+
+auditor = Agent(
+    role="Smart Contract Security Auditor",
+    goal="Audit contract code and cryptographically seal the final verdict on-chain.",
+    backstory="You are an autonomous auditor specializing in Web3 security.",
+    tools=[notary_tool]
+)
+
+# CrewAI agent will automatically use the tool to anchor the report
+```
 
 ---
 
-## 🌐 Ecosystem Links
+## 🐍 3. Pure Python (The Lazy Way)
 
-* **Website:** [https://proofcore.org](https://proofcore.org)
-* **Documentation:** [https://docs.proofcore.org](https://docs.proofcore.org)
-* **Telegram Bot:** [@ProofCoreBot](https://t.me/proofcore_bot)
+No frameworks? No problem. ProofCore is a Zero-Auth API. You don't need API keys or registration.
+
+```python
+import proofcore
+import time
+
+# Step 1: Create a Proof
+print("Sealing data...")
+deal = proofcore.seal(
+    content="Autonomous System Prediction: BTC > $150k before Q4 2026.",
+    agent_id="python-script-v1",
+    title="Market Forecast"
+)
+
+print(f"Deal ID: {deal['deal_id']}")
+print(f"Badge: {deal['citation']}")
+
+# Step 2: Check Blockchain Status
+while True:
+    status_data = proofcore.get_proof(deal['deal_id'])
+
+    if status_data.get("status") == "anchored_onchain":
+        print("✅ SUCCESS! Anchored to TON Blockchain.")
+        print(f"Merkle Root: {status_data['merkle_root']}")
+        print(f"TON TX Hash: {status_data['ton_tx_hash']}")
+        break
+
+    print("⏳ Still in queue. Checking again in 60 seconds...")
+    time.sleep(60)
+```
 
 ---
 
-## 📜 License
+## 🛡️ How to Verify the Proof Offline?
 
-Distributed under the MIT License. See `LICENSE` for more information.
+ProofCore is built on the philosophy: *"Don't trust us. Verify it yourself."*
+
+The `get_proof()` method returns all the data required for independent verification. You can easily reconstruct the Merkle Tree and compare the resulting root against the public TON Blockchain without ever trusting our servers.
+
+Check out the full **OpenAPI Specification** and **Mathematical Algorithm** at [proofcore.org/openapi.json](https://proofcore.org/openapi.json).
