@@ -57,17 +57,14 @@ pip install proofcore
 ```python
 from langchain_openai import ChatOpenAI
 from langchain.agents import initialize_agent, AgentType
-from proofcore.langchain import ProofCoreSealerTool
+from proofcore.langchain import ProofCoreSealerTool, ProofCoreVerifierTool
 
-# 1. Init LLM and our official drop-in tool
 llm = ChatOpenAI(model="gpt-4o")
-tools = [ProofCoreSealerTool()]
+# Tools for both sealing output and verifying other agents' claims
+tools = [ProofCoreSealerTool(), ProofCoreVerifierTool()]
 
-# 2. Run the agent
 agent = initialize_agent(tools, llm, agent=AgentType.OPENAI_FUNCTIONS, verbose=True)
-
-# The agent will write the audit, call the tool, and give you the verification link!
-response = agent.run("Write a short security audit for an ERC-20 token and notarize it.")
+response = agent.run("Verify the authenticity of report for deal '4eea9784-2371-4505-8f2f-0b4c5a15a9ec' with content 'Vault audit...'")
 print(response)
 ```
 
@@ -76,54 +73,43 @@ print(response)
 ## 🕵️ 2. CrewAI Integration
 
 ```python
-from crewai import Agent, Task, Crew
-from proofcore.crewai import ProofCoreCrewTool
+from crewai import Agent
+from proofcore.crewai import ProofCoreCrewTool, ProofCoreCrewVerifyTool
 
-notary_tool = ProofCoreCrewTool()
-
+# Drop-in tools for CrewAI pipelines
 auditor = Agent(
-    role="Smart Contract Security Auditor",
-    goal="Audit contract code and cryptographically seal the final verdict on-chain.",
-    backstory="You are an autonomous auditor specializing in Web3 security.",
-    tools=[notary_tool]
+    role="Smart Contract Auditor",
+    goal="Audit code, seal proofs on TON, and verify counterparty claims.",
+    tools=[ProofCoreCrewTool(), ProofCoreCrewVerifyTool()]
 )
-
-# CrewAI agent will automatically use the tool to anchor the report
 ```
 
 ---
 
 ## 🐍 3. Pure Python (The Lazy Way)
 
-No frameworks? No problem. ProofCore is a Zero-Auth API. You don't need API keys or registration.
+No frameworks? ProofCore is a Zero-Auth API. No API keys or registration required.
 
 ```python
 import proofcore
-import time
 
-# Step 1: Create a Proof
-print("Sealing data...")
+# Step 1: Seal content & get instant Ed25519 attestation
 deal = proofcore.seal(
     content="Autonomous System Prediction: BTC > $150k before Q4 2026.",
     agent_id="python-script-v1",
     title="Market Forecast"
 )
-
 print(f"Deal ID: {deal['deal_id']}")
 print(f"Badge: {deal['citation']}")
 
-# Step 2: Check Blockchain Status
-while True:
-    status_data = proofcore.get_proof(deal['deal_id'])
-
-    if status_data.get("status") == "anchored_onchain":
-        print("✅ SUCCESS! Anchored to TON Blockchain.")
-        print(f"Merkle Root: {status_data['merkle_root']}")
-        print(f"TON TX Hash: {status_data['ton_tx_hash']}")
-        break
-
-    print("⏳ Still in queue. Checking again in 60 seconds...")
-    time.sleep(60)
+# Step 2: Programmatic M2M Verification (Agent-to-Agent)
+result = proofcore.verify(
+    deal_id=deal['deal_id'],
+    content="Autonomous System Prediction: BTC > $150k before Q4 2026."
+)
+print(f"Is Authentic: {result['valid']}")
+print(f"Ed25519 Signature Valid: {result['checks']['signature_valid']}")
+print(f"TON Blockchain Status: {result['anchor']['status']}")
 ```
 
 ---
