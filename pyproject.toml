@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "proofcore"
-version = "0.1.1"
+version = "0.1.7"
 description = "Official Python SDK & AI Tools for ProofCore Blockchain Notarization Protocol."
 readme = {file = "README.md", content-type = "text/markdown"}
 license = { text = "MIT" }
@@ -16,12 +16,13 @@ classifiers = [
 ]
 dependencies = [
     "requests>=2.28.0",
-    "pydantic>=2.0.0"
+    "pydantic>=2.0.0",
 ]
 
 [project.optional-dependencies]
 langchain = ["langchain-core>=0.2.0"]
 crewai = ["crewai>=0.50.0"]
+ui = ["gradio>=4.0.0"]
 
 [project.urls]
 Homepage = "https://proofcore.org"

@@ -1,3 +1,27 @@
+Metadata-Version: 2.4
+Name: proofcore
+Version: 0.1.7
+Summary: Official Python SDK & AI Tools for ProofCore Blockchain Notarization Protocol.
+Author-email: ProofCore Protocol <sealit@proofcore.org>
+License: MIT
+Project-URL: Homepage, https://proofcore.org
+Project-URL: Documentation, https://proofcore.org/openapi.json
+Project-URL: Repository, https://github.com/ProofCore-Protocol/proofcore
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Developers
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests>=2.28.0
+Requires-Dist: pydantic>=2.0.0
+Provides-Extra: langchain
+Requires-Dist: langchain-core>=0.2.0; extra == "langchain"
+Provides-Extra: crewai
+Requires-Dist: crewai>=0.50.0; extra == "crewai"
+Provides-Extra: ui
+Requires-Dist: gradio>=4.0.0; extra == "ui"
+Dynamic: license-file
+
 # 🛡️ ProofCore Protocol
 
 **The Cryptographic Notarization & Evidence Layer for the AI & M2M Economy**
