@@ -1,7 +1,26 @@
-from .client import ProofCoreClient, seal, get_proof, verify, get_pubkey
+from .client import (
+    ProofCoreClient,
+    seal,
+    seal_inference,
+    seal_artifacts,
+    get_proof,
+    verify,
+    verify_local,
+    get_pubkey
+)
 
-__version__ = "0.1.8"
-__all__ = ["ProofCoreClient", "seal", "get_proof", "verify", "get_pubkey"]
+__version__ = "0.1.9"
+
+__all__ = [
+    "ProofCoreClient",
+    "seal",
+    "seal_inference",
+    "seal_artifacts",
+    "get_proof",
+    "verify",
+    "verify_local",
+    "get_pubkey"
+]
 
 try:
     from .langchain import ProofCoreSealerTool, ProofCoreVerifierTool
