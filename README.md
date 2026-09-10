@@ -1,16 +1,13 @@
-# 🛡️ ProofCore Protocol
+# 🛡️ ProofCore Python SDK
 
-**The Cryptographic Notarization & Evidence Layer for the AI & M2M Economy**
+[![PyPI Version](https://img.shields.io/pypi/v/proofcore.svg?color=00d2ff)](https://pypi.org/project/proofcore/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/proofcore.svg)](https://pypi.org/project/proofcore/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-00f298.svg)](https://opensource.org/licenses/MIT)
+[![TON Blockchain](https://img.shields.io/badge/TON-Mainnet-blue.svg)](https://ton.org)
+[![Strict Zero-Storage](https://img.shields.io/badge/Privacy-Strict%20Zero--Storage-brightgreen.svg)](#strict-zero-storage-architecture)
 
-[![TON Blockchain](https://img.shields.io/badge/Blockchain-TON%20Testnet%2FMainnet-0098EA?logo=ton&logoColor=white)](https://ton.org)
-[![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python&logoColor=white)](https://www.python.org)
-[![OpenAPI 3.1](https://img.shields.io/badge/OpenAPI-3.1.0-6BA539?logo=openapi-initiative&logoColor=white)](https://proofcore.org/openapi.json)
-[![llms.txt](https://img.shields.io/badge/llms.txt-Standard%20Compliant-purple)](https://proofcore.org/llms.txt)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-> *"Don't trust ProofCore. Verify the proof yourself."*
-
-[🌐 Website](https://proofcore.org) • [📖 OpenAPI Spec](https://proofcore.org/openapi.json) • [🤖 llms.txt](https://proofcore.org/llms.txt) • [📱 Telegram Bot](https://t.me/ProofCoreBot)
+> **Decentralized Cryptographic Evidence Layer for Autonomous AI Agents, Developers, and DevOps.**  
+> Anchor text, model inferences, and software supply chains to The Open Network (TON) Blockchain via Merkle trees.
 
 ---
 
@@ -38,119 +35,220 @@ In the era of autonomous AI agents, digital trust is broken:
                                             └────────────────────┘
 ```
 
- ---
-  ## 🚀 Developer Integrations & SDK
+## ⚡ Core Axiom
 
-  **Zero-Auth Cryptographic Notarization API for AI Agents & Autonomous Systems** The easiest way to interact with the TON Blockchain and seal your data is to use our official Python package.
+> *“Don't trust ProofCore. Verify the mathematical proof yourself.”*
 
-## 📦 Installation
+ProofCore separates cryptographic trust from vendor dependency:
+- **Instant Attestation (<10ms):** Server signs SHA-256 payload digests with an Ed25519 notary key.
+- **Decentralized Anchor (~30s):** Aggregates thousands of hashes into a single RFC 6962 Merkle root anchored in a public TON block.
+- **Strict Zero-Storage:** Raw inputs and prompts are processed in RAM and discarded. Hashes are anchored; your data never touches our disk.
+- **100% Offline Verifiability:** Verify proofs locally without internet, API keys, or ProofCore servers.
+
+---
+
+## 🚀 Installation
 
 ```bash
-pip install proofcore
+pip install --upgrade proofcore
 ```
-*(For specific AI frameworks, use `pip install proofcore[langchain]` or `pip install proofcore[crewai]`)*
 
----
-
-## 🤖 1. LangChain Agent Integration
-
-```python
-from langchain_openai import ChatOpenAI
-from langchain.agents import initialize_agent, AgentType
-from proofcore.langchain import ProofCoreSealerTool, ProofCoreVerifierTool
-
-llm = ChatOpenAI(model="gpt-4o")
-# Tools for both sealing output and verifying other agents' claims
-tools = [ProofCoreSealerTool(), ProofCoreVerifierTool()]
-
-agent = initialize_agent(tools, llm, agent=AgentType.OPENAI_FUNCTIONS, verbose=True)
-response = agent.run("Verify the authenticity of report for deal '4eea9784-2371-4505-8f2f-0b4c5a15a9ec' with content 'Vault audit...'")
-print(response)
+*Optional agent ecosystem dependencies:*
+```bash
+pip install proofcore[langchain]  # LangChain tools
+pip install proofcore[crewai]     # CrewAI tools
+pip install proofcore[gradio]     # Gradio UI components
 ```
 
 ---
 
-## 🕵️ 2. CrewAI Integration
+## 🛠️ Quickstart
 
-```python
-from crewai import Agent
-from proofcore.crewai import ProofCoreCrewTool, ProofCoreCrewVerifyTool
-
-# Drop-in tools for CrewAI pipelines
-auditor = Agent(
-    role="Smart Contract Auditor",
-    goal="Audit code, seal proofs on TON, and verify counterparty claims.",
-    tools=[ProofCoreCrewTool(), ProofCoreCrewVerifyTool()]
-)
-```
-
----
-
-## 🐍 3. Pure Python (The Lazy Way)
-
-No frameworks? ProofCore is a Zero-Auth API. No API keys or registration required.
+### 1. Atomic AI Inference Sealing (Eliminates JSON Escaping Bugs)
+Best for LLM pipelines and autonomous agents. Prevents prompt/output tampering:
 
 ```python
 import proofcore
 
-# Step 1: Seal content & get instant Ed25519 attestation
-deal = proofcore.seal(
-    content="Autonomous System Prediction: BTC > $150k before Q4 2026.",
-    agent_id="python-script-v1",
-    title="Market Forecast"
+proof = proofcore.seal_inference(
+    prompt="Audit this Solidity contract for reentrancy vulnerabilities...",
+    output="Audit complete. Severity: 0 High, 0 Critical. Safe for mainnet deployment.",
+    model_id="claude-3-5-sonnet-20241022",
+    title="Vault.sol Security Audit"
 )
-print(f"Deal ID: {deal['deal_id']}")
-print(f"Badge: {deal['citation']}")
 
-# Step 2: Programmatic M2M Verification (Agent-to-Agent)
-result = proofcore.verify(
-    deal_id=deal['deal_id'],
-    content="Autonomous System Prediction: BTC > $150k before Q4 2026."
-)
-print(f"Is Authentic: {result['valid']}")
-print(f"Ed25519 Signature Valid: {result['checks']['signature_valid']}")
-print(f"TON Blockchain Status: {result['anchor']['status']}")
+print(f"Deal ID: {proof['deal_id']}")
+print(f"Explorer URL: {proof['verification_url']}")
+print(f"Verification Badge: {proof['badge_markdown']}")
 ```
 
----
-
-## 🎨 4. Hugging Face Spaces & Gradio (UI Component)
-
-Building an AI demo on Hugging Face? Add our drop-in UI component to instantly give your space a Web3 verification badge. 
-
-First, add `proofcore[ui]` to your `requirements.txt`. Then use the `NotarizedOutput` class:
+### 2. General Text / Raw JSON Sealing (WYSIWYWH)
+Accepts plain text, markdown, source code, or arbitrary stringified JSON envelopes (e.g. precomputed hashes of terabyte datasets):
 
 ```python
+import proofcore
 
-import gradio as gr
-from proofcore.gradio import NotarizedOutput
+# Plain text or code
+proof = proofcore.seal(
+    content="Bilateral Agreement Terms: Party A agrees to pay Party B $5,000 on delivery.",
+    title="Freelance P2P Milestone"
+)
 
-def generate_text(prompt):
-    return f"AI generated response for: {prompt}"
+# Or stringified JSON envelope containing offline hashes
+proof_json = proofcore.seal(
+    content='{"dataset": "imagenet-subset.tar.gz", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}',
+    title="ML Training Dataset Checksum"
+)
+```
 
-with gr.Blocks() as demo:
-    gr.Markdown("# My Secure AI Generator")
-    inp = gr.Textbox(label="Prompt")
-    
-    # Drop-in replacement for gr.Textbox
-    out = NotarizedOutput(label="AI Output (Anchored on TON)")
-    
-    btn = gr.Button("Generate & Notarize")
-    
-    # 1. Generate text -> 2. Process and Seal
-    btn.click(fn=generate_text, inputs=inp, outputs=out.textbox).then(
-        fn=out.process, inputs=out.textbox, outputs=out.outputs
-    )
+### 3. Multi-File Artifacts & SBOM Batching
+Seal multiple files or codebases into a single cryptographic batch:
 
-demo.launch()
+```python
+import proofcore
+
+files = [
+    {"filename": "main.py", "content": "print('hello world')"},
+    {"filename": "requirements.txt", "content": "fastapi==0.115.0\npydantic==2.9.2"},
+    {"filename": "sbom.json", "content": '{"spdxVersion": "SPDX-2.3", "packages": []}'}
+]
+
+proof = proofcore.seal_artifacts(
+    files=files,
+    title="Release v1.0.0 Artifacts"
+)
 ```
 
 ---
 
-## 🛡️ How to Verify the Proof Offline?
+## 🔍 Independent Verification
 
-ProofCore is built on the philosophy: *"Don't trust us. Verify it yourself."*
+ProofCore gives you two independent verification workflows:
 
-The `get_proof()` method returns all the data required for independent verification. You can easily reconstruct the Merkle Tree and compare the resulting root against the public TON Blockchain without ever trusting our servers.
+### A. 100% Offline Local Verification (The Killer Feature)
+Mathematically verify that a string matches a proof manifest locally. **Zero network calls, zero vendor dependency:**
 
-Check out the full **OpenAPI Specification** and **Mathematical Algorithm** at [proofcore.org/openapi.json](https://proofcore.org/openapi.json).
+```python
+import proofcore
+
+# Fetch the proof manifest once (or load from local proof.json)
+proof_data = proofcore.get_proof("b4ed4c20-7f2a-4c8d-9a81-123456789abc")
+
+# Verify offline!
+result = proofcore.verify_local(
+    content="Audit complete. Severity: 0 High, 0 Critical. Safe for mainnet deployment.",
+    proof_data=proof_data
+)
+
+if result["valid"]:
+    print(f"✅ Cryptographically Proven! Merkle Root: {result['calculated_merkle_root']}")
+    print(f"TON Transaction: {result['ton_tx_hash']}")
+else:
+    print(f"❌ Verification Failed: {result.get('error')}")
+```
+
+### B. Remote M2M Verification (Gateway Check)
+Verify content directly against the ProofCore notary oracle:
+
+```python
+import proofcore
+
+result = proofcore.verify(
+    deal_id="b4ed4c20-7f2a-4c8d-9a81-123456789abc",
+    content="Audit complete. Severity: 0 High, 0 Critical. Safe for mainnet deployment."
+)
+
+print(result["valid"])  # True / False
+print(result["checks"]["signature_valid"])  # Ed25519 Notary Signature
+```
+
+---
+
+## 🤖 Model Context Protocol (MCP) Integration
+
+ProofCore hosts a public, zero-auth Model Context Protocol server.
+
+### Connect to Cursor / Windsurf
+Add to `.cursor/mcp.json` or Windsurf settings:
+
+```json
+{
+  "mcpServers": {
+    "proofcore": {
+      "url": "https://mcp.proofcore.org"
+    }
+  }
+}
+```
+
+### Connect to Claude Desktop / Claude Code
+```bash
+claude mcp add proofcore https://mcp.proofcore.org
+```
+
+---
+
+## 🧩 Agent Framework Tools
+
+### LangChain Integration
+```python
+from proofcore.langchain import ProofCoreSealerTool, ProofCoreVerifierTool
+from langchain.agents import initialize_agent, AgentType
+from langchain_openai import ChatOpenAI
+
+tools = [ProofCoreSealerTool(), ProofCoreVerifierTool()]
+agent = initialize_agent(tools, ChatOpenAI(model="gpt-4o"), agent=AgentType.OPENAI_FUNCTIONS)
+
+agent.run("Review this smart contract and cryptographically seal your findings.")
+```
+
+### CrewAI Integration
+```python
+from crewai import Agent, Task, Crew
+from proofcore.crewai import ProofCoreCrewTool
+
+auditor = Agent(
+    role="Smart Contract Auditor",
+    goal="Identify security vulnerabilities and anchor results to TON Blockchain",
+    tools=[ProofCoreCrewTool()],
+    verbose=True
+)
+```
+
+---
+
+## 🔒 Strict Zero-Storage Architecture
+
+ProofCore operates on a strict **Zero-Knowledge, Zero-Storage** principle for developer APIs:
+1. Payloads sent to `/seal` are hashed in RAM via `SHA-256`.
+2. Raw payloads are **never written to disk**.
+3. The database only records: `sha256_hash`, `merkle_root`, `deal_id`, timestamps, and the Ed25519 notary signature.
+4. **GDPR & Enterprise Safe:** We physically cannot leak your proprietary source code, secrets, or prompts because we never retain them.
+
+---
+
+## ⚖️ Evidentiary & Regulatory Alignment
+
+ProofCore Evidence Packages are architected to satisfy digital evidence standards across global jurisdictions:
+- **US FRE 902(13) & 902(14):** Self-authenticating electronic records verified by a process or system producing an accurate result (hash values).
+- **EU AI Act (Article 50):** Machine-readable marking and provenance of AI-generated synthetic content.
+- **EU eIDAS 2.0 (Reg 2024/1183):** Electronic ledgers and timestamps legally recognized across member states.
+- **SLSA Level 3 & SBOM:** Cryptographic provenance for CI/CD build pipelines using GitHub Actions OIDC tokens.
+- **UK Civil Evidence Act 1995:** Section 8/9 continuous Chain of Custody validation.
+
+---
+
+## 🌐 Ecosystem Links
+
+- **Interactive Sandbox & Tamper Simulator:** [demo.proofcore.org](https://demo.proofcore.org)
+- **Protocol Documentation:** [docs.proofcore.org](https://docs.proofcore.org)
+- **Official Website:** [proofcore.org](https://proofcore.org)
+- **MCP Server Endpoint:** `https://mcp.proofcore.org`
+- **GitHub Action:** [ProofCore-Protocol/proofcore-action@v1](https://github.com/ProofCore-Protocol/proofcore-action)
+- **Telegram Bot:** [@ProofCoreBot](https://t.me/ProofCoreBot)
+
+---
+
+## 📄 License
+
+MIT License © 2026 ProofCore Protocol Core Contributors.
