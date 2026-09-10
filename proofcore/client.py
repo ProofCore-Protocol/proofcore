@@ -149,6 +149,12 @@ class ProofCoreClient:
             "ton_tx_hash": proof_data.get("ton_tx_hash") or proof_data.get("onchain", {}).get("ton_tx_hash")
         }
 
+    def get_pubkey(self) -> Dict[str, Any]:
+        """Fetch the notary's Ed25519 public key."""
+        res = requests.get(f"{self.base_url}/pubkey", timeout=10)
+        res.raise_for_status()
+        return res.json()
+
 
 _default_client = ProofCoreClient()
 
@@ -175,3 +181,6 @@ def verify(deal_id: str, content: str): return _default_client.verify(deal_id, c
 
 def verify_local(proof_data: dict, content=None, inference_dict=None, files=None): return _default_client.verify_local(
     proof_data, content, inference_dict, files)
+
+
+def get_pubkey() -> Dict[str, Any]: return _default_client.get_pubkey()
