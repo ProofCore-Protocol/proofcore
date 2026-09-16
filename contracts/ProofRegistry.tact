@@ -1,14 +1,8 @@
 import "@stdlib/deploy";
 import "@stdlib/ownable";
 
-message(0x12345678) AnchorBatch {
-    batch_id: String;
-    merkle_root: String;
-}
-
 message BatchAnchoredEvent {
-    batch_id: String;
-    merkle_root: String;
+    merkle_root_msg: String;
     timestamp: Int as uint32;
     sender: Address;
 }
@@ -23,23 +17,35 @@ contract ProofRegistry with Deployable, Ownable {
         self.total_batches = 0;
     }
 
-    receive(msg: AnchorBatch) {
+    // 1. Фиксация батча (Оставляем String ради красивого TONViewer!)
+    receive(msg: String) {
         self.requireOwner();
         self.total_batches = self.total_batches + 1;
 
         emit(BatchAnchoredEvent{
-            batch_id: msg.batch_id,
-            merkle_root: msg.merkle_root,
+            merkle_root_msg: msg,
             timestamp: now(),
             sender: sender()
         }.toCell());
+    }
 
-        // 🚨 ВЫВОДИМ MERKLE ROOT ПРЯМО В ТЕКСТОВЫЙ КОММЕНТАРИЙ ТРАНЗАКЦИИ!
-        let comment: StringBuilder = beginComment();
-        comment.append("Merkle Root: ");
-        comment.append(msg.merkle_root);
+    // 2. Сбор урожая (Оставляем резерв, чтобы контракт жил вечно!)
+    receive("withdraw") {
+        self.requireOwner();
 
-        self.reply(comment.toCell());
+        // Резервируем 0.05 TON на вечную оплату хранения (Storage fee)
+        let reserve: Int = ton("0.05");
+        let amount_to_send: Int = myBalance() - reserve - ton("0.01"); // Минус газ на саму транзакцию вывода
+
+        // Выводим только если накопилось больше резерва
+        require(amount_to_send > 0, "Insufficient funds to withdraw");
+
+        send(SendParameters{
+            to: self.owner,
+            value: amount_to_send,
+            mode: SendIgnoreErrors, // Переводим конкретно высчитанную сумму (amount_to_send)
+            body: "ProofCore Yield".asComment()
+        });
     }
 
     get fun getTotalBatches(): Int {
